@@ -34,11 +34,11 @@ AC_DEFUN([MCA_ompi_op_riscv64_CONFIG],[
                  [AC_MSG_CHECKING([for RVV support (no additional flags)])
                   AC_LINK_IFELSE(
                              [AC_LANG_PROGRAM([[
-#if defined(__riscv) && defined(__riscv_v_intrinsic) && defined(__riscv_v)
+#if defined(__linux__) && defined(__riscv_v_intrinsic) && defined(__riscv_v)
 #include <riscv_vector.h>
 #include <stdint.h>
 #else
-#error "No support for __riscv"
+#error "Not a linux platform or no support for RISC-V vector extension"
 #endif
                                        ]],
                                        [[
@@ -57,11 +57,11 @@ AC_DEFUN([MCA_ompi_op_riscv64_CONFIG],[
                          CFLAGS="$CFLAGS -march=rv64gcv"
                           AC_LINK_IFELSE(
                              [AC_LANG_PROGRAM([[
-#if defined(__riscv) && defined(__riscv_v_intrinsic) && defined(__riscv_v)
+#if defined(__linux__) && defined(__riscv_v_intrinsic) && defined(__riscv_v)
 #include <riscv_vector.h>
 #include <stdint.h>
 #else
-#error "No support for __riscv"
+#error "Not a linux platform or no support for RISC-V vector extension"
 #endif
                                        ]],
                                        [[
