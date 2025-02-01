@@ -40,7 +40,7 @@ AC_DEFUN([MCA_ompi_op_riscv64_CONFIG],[
                                        ]],
                                        [[
 #if defined(__riscv) && defined(__riscv_v_intrinsic) && defined(__riscv_v)
-    size_t vlmax_e8m1 = __riscv_vsetvlmax_e8m1();
+    size_t vlmax_e8m1 = __riscv_vsetvlmax_e8m2();
     vint8m1_t offset_vec = __riscv_vmv_v_x_i8m1(0, vlmax_e8m1);
 #endif
                                        ]])],
