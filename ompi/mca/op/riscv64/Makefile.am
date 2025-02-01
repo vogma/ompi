@@ -43,7 +43,6 @@ specialized_op_libs =
 if MCA_BUILD_ompi_op_has_rvv_support
 specialized_op_libs += liblocal_ops_rvv.la
 liblocal_ops_rvv_la_SOURCES = op_riscv64_functions.c
-liblocal_ops_rvv_la_CFLAGS = @MCA_BUILD_OP_RVV_FLAGS@
 liblocal_ops_rvv_la_CPPFLAGS = -DGENERATE_RVV_CODE
 endif
 

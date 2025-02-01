@@ -2,8 +2,6 @@
  * Copyright (c) 2019      The University of Tennessee and The University
  *                         of Tennessee Research Foundation.  All rights
  *                         reserved.
- * Copyright (c) 2019      ARM Ltd.  All rights reserved.
- * Copyright (c) 2024      NVIDIA Corporation.  All rights reserved.
  *
  * $COPYRIGHT$
  *
@@ -25,17 +23,40 @@
 #include "stdio.h"
 
 #include "ompi/constants.h"
-#include "ompi/mca/op/riscv64/op_riscv64.h"
 #include "ompi/mca/op/base/base.h"
 #include "ompi/mca/op/op.h"
+#include "ompi/mca/op/riscv64/op_riscv64.h"
 #include "ompi/op/op.h"
+
+#include <asm/hwprobe.h>
+#include <sched.h>
+#include <stdint.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+
+#ifndef NR_riscv_hwprobe
+#    define NR_riscv_hwprobe 258
+#endif
+
+static struct riscv_hwprobe query = {RISCV_HWPROBE_KEY_IMA_EXT_0, 0};
+
+long sys_riscv_hwprobe(struct riscv_hwprobe *pairs, size_t pairc, size_t cpuc, cpu_set_t *cpus,
+                       unsigned int flags)
+{
+    return syscall(NR_riscv_hwprobe, pairs, pairc, cpuc, cpus, 0 /* flags*/);
+}
+
+int cpu_has_feature(uint64_t feature)
+{
+    return (query.value & feature) != 0;
+}
 
 static int mca_op_riscv64_component_open(void);
 static int mca_op_riscv64_component_close(void);
 static int mca_op_riscv64_component_init_query(bool enable_progress_threads,
                                                bool enable_mpi_thread_multiple);
-static struct ompi_op_base_module_1_0_0_t *
-mca_op_riscv64_component_op_query(struct ompi_op_t *op, int *priority);
+static struct ompi_op_base_module_1_0_0_t *mca_op_riscv64_component_op_query(struct ompi_op_t *op,
+                                                                             int *priority);
 static int mca_op_riscv64_component_register(void);
 
 ompi_op_riscv64_component_t mca_op_riscv64_component = {
@@ -103,15 +124,25 @@ static int mca_op_riscv64_component_register(void)
 {
 
     printf("rvv_component_register\n");
-    mca_op_riscv64_component.hardware_available = 1; /* Check for RVV */
+    mca_op_riscv64_component.hardware_available = 0; /* Check for RVV */
 
-    (void)mca_base_component_var_register(&mca_op_riscv64_component.super.opc_version,
-                                          "hardware_available",
-                                          "Whether the rvv hardware is available",
-                                          MCA_BASE_VAR_TYPE_INT, NULL, 0, 0,
-                                          OPAL_INFO_LVL_9,
-                                          MCA_BASE_VAR_SCOPE_READONLY,
-                                          &mca_op_riscv64_component.hardware_available);
+    if (sys_riscv_hwprobe(&query, 1, 0, NULL, 0) == 0) {
+        if (cpu_has_feature(RISCV_HWPROBE_IMA_V)) {
+            printf("cpu has V Extension\n");
+            mca_op_riscv64_component.hardware_available = 1;
+        }else{
+            printf("cpu has no V Extension\n");
+        }
+    }else{
+            printf("syscall failed!\n");
+    }
+
+    (void) mca_base_component_var_register(&mca_op_riscv64_component.super.opc_version,
+                                           "hardware_available",
+                                           "Whether the rvv hardware is available",
+                                           MCA_BASE_VAR_TYPE_INT, NULL, 0, 0, OPAL_INFO_LVL_9,
+                                           MCA_BASE_VAR_SCOPE_READONLY,
+                                           &mca_op_riscv64_component.hardware_available);
 
     return OMPI_SUCCESS;
 }
@@ -122,8 +153,7 @@ static int mca_op_riscv64_component_register(void)
 static int mca_op_riscv64_component_init_query(bool enable_progress_threads,
                                                bool enable_mpi_thread_multiple)
 {
-    if (mca_op_riscv64_component.hardware_available)
-    {
+    if (mca_op_riscv64_component.hardware_available) {
         printf("rvv_component_init_query successful\n");
         return OMPI_SUCCESS;
     }
@@ -131,17 +161,17 @@ static int mca_op_riscv64_component_init_query(bool enable_progress_threads,
 }
 
 #if defined(OMPI_MCA_OP_HAVE_RVV)
-extern ompi_op_base_handler_fn_t
-    ompi_op_rvv_functions[OMPI_OP_BASE_FORTRAN_OP_MAX][OMPI_OP_BASE_TYPE_MAX];
-extern ompi_op_base_3buff_handler_fn_t
-    ompi_op_rvv_3buff_functions[OMPI_OP_BASE_FORTRAN_OP_MAX][OMPI_OP_BASE_TYPE_MAX];
+extern ompi_op_base_handler_fn_t ompi_op_rvv_functions[OMPI_OP_BASE_FORTRAN_OP_MAX]
+                                                      [OMPI_OP_BASE_TYPE_MAX];
+extern ompi_op_base_3buff_handler_fn_t ompi_op_rvv_3buff_functions[OMPI_OP_BASE_FORTRAN_OP_MAX]
+                                                                  [OMPI_OP_BASE_TYPE_MAX];
 #endif /* defined(OMPI_MCA_OP_HAVE_RVV) */
 
 /*
  * Query whether this component can be used for a specific op
  */
-static struct ompi_op_base_module_1_0_0_t *
-mca_op_riscv64_component_op_query(struct ompi_op_t *op, int *priority)
+static struct ompi_op_base_module_1_0_0_t *mca_op_riscv64_component_op_query(struct ompi_op_t *op,
+                                                                             int *priority)
 {
     printf("rvv_component_op_query...\n");
 
@@ -149,14 +179,12 @@ mca_op_riscv64_component_op_query(struct ompi_op_t *op, int *priority)
     /* Sanity check -- although the framework should never invoke the
        _component_op_query() on non-intrinsic MPI_Op's, we'll put a
        check here just to be sure. */
-    if (0 == (OMPI_OP_FLAGS_INTRINSIC & op->o_flags))
-    {
+    if (0 == (OMPI_OP_FLAGS_INTRINSIC & op->o_flags)) {
         printf("rvv_component_op_query failed\n");
         return NULL;
     }
 
-    switch (op->o_f_to_c_index)
-    {
+    switch (op->o_f_to_c_index) {
     case OMPI_OP_BASE_FORTRAN_MAX:
     case OMPI_OP_BASE_FORTRAN_MIN:
     case OMPI_OP_BASE_FORTRAN_SUM:
@@ -164,31 +192,25 @@ mca_op_riscv64_component_op_query(struct ompi_op_t *op, int *priority)
     case OMPI_OP_BASE_FORTRAN_BOR:
     case OMPI_OP_BASE_FORTRAN_BAND:
     case OMPI_OP_BASE_FORTRAN_BXOR:
-        for (int i = 0; i < OMPI_OP_BASE_TYPE_MAX; ++i)
-        {
+        for (int i = 0; i < OMPI_OP_BASE_TYPE_MAX; ++i) {
             module->opm_fns[i] = NULL;
             module->opm_3buff_fns[i] = NULL;
 #if defined(OMPI_MCA_OP_HAVE_RVV)
-            if (mca_op_riscv64_component.hardware_available & 1)
-            {
-                if (NULL == module->opm_fns[i])
-                {
+            if (mca_op_riscv64_component.hardware_available & 1) {
+                if (NULL == module->opm_fns[i]) {
                     printf("found suitable 2buff intrinsic function\n");
                     module->opm_fns[i] = ompi_op_rvv_functions[op->o_f_to_c_index][i];
                 }
-                if (NULL == module->opm_3buff_fns[i])
-                {
+                if (NULL == module->opm_3buff_fns[i]) {
                     printf("found suitable 3buff intrinsic function\n");
                     module->opm_3buff_fns[i] = ompi_op_rvv_3buff_functions[op->o_f_to_c_index][i];
                 }
             }
 #endif /* defined(OMPI_MCA_OP_HAVE_RVV) */
-            if (NULL != module->opm_fns[i])
-            {
+            if (NULL != module->opm_fns[i]) {
                 OBJ_RETAIN(module);
             }
-            if (NULL != module->opm_3buff_fns[i])
-            {
+            if (NULL != module->opm_3buff_fns[i]) {
                 OBJ_RETAIN(module);
             }
         }
@@ -219,10 +241,9 @@ mca_op_riscv64_component_op_query(struct ompi_op_t *op, int *priority)
        is a base component plus some other module-specific cached
        information), so we have to cast it to the right pointer type
        before returning. */
-    if (NULL != module)
-    {
+    if (NULL != module) {
         printf("rvv module ready to use\n");
         *priority = 50;
     }
-    return (ompi_op_base_module_1_0_0_t *)module;
+    return (ompi_op_base_module_1_0_0_t *) module;
 }
