@@ -154,7 +154,6 @@ static int mca_op_riscv64_component_init_query(bool enable_progress_threads,
                                                bool enable_mpi_thread_multiple)
 {
     if (mca_op_riscv64_component.hardware_available) {
-        printf("rvv_component_init_query successful\n");
         return OMPI_SUCCESS;
     }
     return OMPI_ERR_NOT_SUPPORTED;
@@ -173,14 +172,12 @@ extern ompi_op_base_3buff_handler_fn_t ompi_op_rvv_3buff_functions[OMPI_OP_BASE_
 static struct ompi_op_base_module_1_0_0_t *mca_op_riscv64_component_op_query(struct ompi_op_t *op,
                                                                              int *priority)
 {
-    printf("rvv_component_op_query...\n");
 
     ompi_op_base_module_t *module = OBJ_NEW(ompi_op_base_module_t);
     /* Sanity check -- although the framework should never invoke the
        _component_op_query() on non-intrinsic MPI_Op's, we'll put a
        check here just to be sure. */
     if (0 == (OMPI_OP_FLAGS_INTRINSIC & op->o_flags)) {
-        printf("rvv_component_op_query failed\n");
         return NULL;
     }
 
@@ -198,11 +195,9 @@ static struct ompi_op_base_module_1_0_0_t *mca_op_riscv64_component_op_query(str
 #if defined(OMPI_MCA_OP_HAVE_RVV)
             if (mca_op_riscv64_component.hardware_available & 1) {
                 if (NULL == module->opm_fns[i]) {
-                    printf("found suitable 2buff intrinsic function\n");
                     module->opm_fns[i] = ompi_op_rvv_functions[op->o_f_to_c_index][i];
                 }
                 if (NULL == module->opm_3buff_fns[i]) {
-                    printf("found suitable 3buff intrinsic function\n");
                     module->opm_3buff_fns[i] = ompi_op_rvv_3buff_functions[op->o_f_to_c_index][i];
                 }
             }
@@ -242,7 +237,6 @@ static struct ompi_op_base_module_1_0_0_t *mca_op_riscv64_component_op_query(str
        information), so we have to cast it to the right pointer type
        before returning. */
     if (NULL != module) {
-        printf("rvv module ready to use\n");
         *priority = 50;
     }
     return (ompi_op_base_module_1_0_0_t *) module;

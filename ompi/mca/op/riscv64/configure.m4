@@ -21,7 +21,7 @@ AC_DEFUN([MCA_ompi_op_riscv64_CONFIG],[
         *)
             op_rvv_check="no";;
     esac
-            AS_IF([test "$op_rvv_check" = "yes"],
+        AS_IF([test "$op_rvv_check" = "yes"],
           [AC_LANG_PUSH([C])
 
            #
