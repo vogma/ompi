@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2019      The University of Tennessee and The University
- *                         of Tennessee Research Foundation.  All rights
- *                         reserved.
  *
  * $COPYRIGHT$
  *
@@ -40,10 +37,9 @@
 
 static struct riscv_hwprobe query = {RISCV_HWPROBE_KEY_IMA_EXT_0, 0};
 
-long sys_riscv_hwprobe(struct riscv_hwprobe *pairs, size_t pairc, size_t cpuc, cpu_set_t *cpus,
-                       unsigned int flags)
+long syscall_hwprobe(struct riscv_hwprobe *pairs)
 {
-    return syscall(NR_riscv_hwprobe, pairs, pairc, cpuc, cpus, 0 /* flags*/);
+    return syscall(NR_riscv_hwprobe, pairs, 1, 0, NULL, 0 /* flags*/);
 }
 
 int cpu_has_feature(uint64_t feature)
@@ -122,19 +118,17 @@ static int mca_op_riscv64_component_close(void)
  */
 static int mca_op_riscv64_component_register(void)
 {
+    mca_op_riscv64_component.hardware_available = 0;
 
-    printf("rvv_component_register\n");
-    mca_op_riscv64_component.hardware_available = 0; /* Check for RVV */
-
-    if (sys_riscv_hwprobe(&query, 1, 0, NULL, 0) == 0) {
+    if (syscall_hwprobe(&query) == 0) { //execute syscall for cpu feature detection
         if (cpu_has_feature(RISCV_HWPROBE_IMA_V)) {
             printf("cpu has V Extension\n");
             mca_op_riscv64_component.hardware_available = 1;
-        }else{
+        } else {
             printf("cpu has no V Extension\n");
         }
-    }else{
-            printf("syscall failed!\n");
+    } else {
+        printf("syscall failed!\n");
     }
 
     (void) mca_base_component_var_register(&mca_op_riscv64_component.super.opc_version,

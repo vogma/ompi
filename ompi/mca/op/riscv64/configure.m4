@@ -30,8 +30,11 @@ AC_DEFUN([MCA_ompi_op_riscv64_CONFIG],[
            AS_IF([test "$op_rvv_check" = "yes"],
                  [AC_MSG_CHECKING([for RVV support])
                   AC_LINK_IFELSE(
-                             [AC_LANG_PROGRAM([[
+                             [AC_LANG_PROGRAM([[                        
 #if defined(__linux__) && defined(__riscv_v_intrinsic) && defined(__riscv_v)
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(6,4,0)
+    #error "Kernel versions below 6.4 are not supported"
+#endif
 #include <riscv_vector.h>
 #include <stdint.h>
 #else

@@ -7,6 +7,12 @@
  * $HEADER$
  */
 
+/** @file
+ *
+ * This is the source code for the rvv functions.
+ *
+ */
+
 #include "ompi_config.h"
 
 #ifdef HAVE_SYS_TYPES_H
@@ -90,8 +96,6 @@ typedef double float64_t;
 /*************************************************************************
  * Max
  *************************************************************************/
-#undef current_func
-#define current_func(a, b) ((a) > (b) ? (a) : (b))
 OP_RVV_FUNC(max, i, 8, 16, int, max, m4)
 OP_RVV_FUNC(max, u, 8, 16, uint, maxu, m4)
 OP_RVV_FUNC(max, i, 16, 8, int, max, m4)
@@ -107,8 +111,6 @@ OP_RVV_FUNC(max, f, 64, 2, float, fmax, m4)
 /*************************************************************************
  * Min
  *************************************************************************/
-#undef current_func
-#define current_func(a, b) ((a) < (b) ? (a) : (b))
 OP_RVV_FUNC(min, i, 8, 16, int, min, m4)
 OP_RVV_FUNC(min, u, 8, 16, uint, minu, m4)
 OP_RVV_FUNC(min, i, 16, 8, int, min, m4)
@@ -124,8 +126,6 @@ OP_RVV_FUNC(min, f, 64, 2, float, fmin, m4)
 /*************************************************************************
  * Sum
  ************************************************************************/
-#undef current_func
-#define current_func(a, b) ((a) + (b))
 OP_RVV_FUNC(sum, i, 8, 16, int, add, m4)
 OP_RVV_FUNC(sum, u, 8, 16, uint, add, m4)
 OP_RVV_FUNC(sum, i, 16, 8, int, add, m4)
@@ -141,8 +141,6 @@ OP_RVV_FUNC(sum, f, 64, 2, float, fadd, m4)
 /*************************************************************************
  * Product
  *************************************************************************/
-#undef current_func
-#define current_func(a, b) ((a) * (b))
 OP_RVV_FUNC(prod, i, 8, 16, int, mul, m4)
 OP_RVV_FUNC(prod, u, 8, 16, uint, mul, m4)
 OP_RVV_FUNC(prod, i, 16, 8, int, mul, m4)
@@ -158,8 +156,6 @@ OP_RVV_FUNC(prod, f, 64, 2, float, fmul, m4)
 /*************************************************************************
  * Bitwise AND
  *************************************************************************/
-#undef current_func
-#define current_func(a, b) ((a) & (b))
 OP_RVV_FUNC(band, i, 8, 16, int, and, m4)
 OP_RVV_FUNC(band, u, 8, 16, uint, and, m4)
 OP_RVV_FUNC(band, i, 16, 8, int, and, m4)
@@ -172,8 +168,6 @@ OP_RVV_FUNC(band, u, 64, 2, uint, and, m4)
 /*************************************************************************
  * Bitwise OR
  *************************************************************************/
-#undef current_func
-#define current_func(a, b) ((a) | (b))
 OP_RVV_FUNC(bor, i, 8, 16, int, or, m4)
 OP_RVV_FUNC(bor, u, 8, 16, uint, or, m4)
 OP_RVV_FUNC(bor, i, 16, 8, int, or, m4)
@@ -186,8 +180,6 @@ OP_RVV_FUNC(bor, u, 64, 2, uint, or, m4)
 /*************************************************************************
  * Bitwise XOR
  *************************************************************************/
-#undef current_func
-#define current_func(a, b) ((a) ^ (b))
 OP_RVV_FUNC(bxor, i, 8, 16, int, xor, m4)
 OP_RVV_FUNC(bxor, u, 8, 16, uint, xor, m4)
 OP_RVV_FUNC(bxor, i, 16, 8, int, xor, m4)
@@ -239,8 +231,6 @@ OP_RVV_FUNC(bxor, u, 64, 2, uint, xor, m4)
 /*************************************************************************
  * Max
  *************************************************************************/
-#undef current_func
-#define current_func(a, b) ((a) > (b) ? (a) : (b))
 OP_RVV_FUNC_3BUFF(max, i, 8, 16, int, max, m4)
 OP_RVV_FUNC_3BUFF(max, u, 8, 16, uint, maxu, m4)
 OP_RVV_FUNC_3BUFF(max, i, 16, 8, int, max, m4)
@@ -256,8 +246,6 @@ OP_RVV_FUNC_3BUFF(max, f, 64, 2, float, fmax, m4)
 /*************************************************************************
  * Min
  *************************************************************************/
-#undef current_func
-#define current_func(a, b) ((a) < (b) ? (a) : (b))
 OP_RVV_FUNC_3BUFF(min, i, 8, 16, int, min, m4)
 OP_RVV_FUNC_3BUFF(min, u, 8, 16, uint, minu, m4)
 OP_RVV_FUNC_3BUFF(min, i, 16, 8, int, min, m4)
@@ -273,8 +261,6 @@ OP_RVV_FUNC_3BUFF(min, f, 64, 2, float, fmin, m4)
 /*************************************************************************
  * Sum
  ************************************************************************/
-#undef current_func
-#define current_func(a, b) ((a) + (b))
 OP_RVV_FUNC_3BUFF(sum, i, 8, 16, int, add, m4)
 OP_RVV_FUNC_3BUFF(sum, u, 8, 16, uint, add, m4)
 OP_RVV_FUNC_3BUFF(sum, i, 16, 8, int, add, m4)
@@ -290,8 +276,6 @@ OP_RVV_FUNC_3BUFF(sum, f, 64, 2, float, fadd, m4)
 /*************************************************************************
  * Product
  *************************************************************************/
-#undef current_func
-#define current_func(a, b) ((a) * (b))
 OP_RVV_FUNC_3BUFF(prod, i, 8, 16, int, mul, m4)
 OP_RVV_FUNC_3BUFF(prod, u, 8, 16, uint, mul, m4)
 OP_RVV_FUNC_3BUFF(prod, i, 16, 8, int, mul, m4)
@@ -307,8 +291,6 @@ OP_RVV_FUNC_3BUFF(prod, f, 64, 2, float, fmul, m4)
 /*************************************************************************
  * Bitwise AND
  *************************************************************************/
-#undef current_func
-#define current_func(a, b) ((a) & (b))
 OP_RVV_FUNC_3BUFF(band, i, 8, 16, int, and, m4)
 OP_RVV_FUNC_3BUFF(band, u, 8, 16, uint, and, m4)
 OP_RVV_FUNC_3BUFF(band, i, 16, 8, int, and, m4)
@@ -321,8 +303,6 @@ OP_RVV_FUNC_3BUFF(band, u, 64, 2, uint, and, m4)
 /*************************************************************************
  * Bitwise OR
  *************************************************************************/
-#undef current_func
-#define current_func(a, b) ((a) | (b))
 OP_RVV_FUNC_3BUFF(bor, i, 8, 16, int, or, m4)
 OP_RVV_FUNC_3BUFF(bor, u, 8, 16, uint, or, m4)
 OP_RVV_FUNC_3BUFF(bor, i, 16, 8, int, or, m4)
@@ -335,8 +315,6 @@ OP_RVV_FUNC_3BUFF(bor, u, 64, 2, uint, or, m4)
 /*************************************************************************
  * Bitwise XOR
  *************************************************************************/
-#undef current_func
-#define current_func(a, b) ((a) ^ (b))
 OP_RVV_FUNC_3BUFF(bxor, i, 8, 16, int, xor, m4)
 OP_RVV_FUNC_3BUFF(bxor, u, 8, 16, uint, xor, m4)
 OP_RVV_FUNC_3BUFF(bxor, i, 16, 8, int, xor, m4)
