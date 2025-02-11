@@ -93,13 +93,13 @@ typedef double float64_t;
 #undef current_func
 #define current_func(a, b) ((a) > (b) ? (a) : (b))
 OP_RVV_FUNC(max, i, 8, 16, int, max, m4)
-// OP_RVV_FUNC(max, u, 8, 16, uint, max, m4)
+OP_RVV_FUNC(max, u, 8, 16, uint, maxu, m4)
 OP_RVV_FUNC(max, i, 16, 8, int, max, m4)
-// OP_RVV_FUNC(max, u, 16, 8, uint, max, m4)
+OP_RVV_FUNC(max, u, 16, 8, uint, maxu, m4)
 OP_RVV_FUNC(max, i, 32, 4, int, max, m4)
-// OP_RVV_FUNC(max, u, 32, 4, uint, max, m4)
+OP_RVV_FUNC(max, u, 32, 4, uint, maxu, m4)
 OP_RVV_FUNC(max, i, 64, 2, int, max, m4)
-// OP_RVV_FUNC(max, u, 64, 2, uint, max, m4)
+OP_RVV_FUNC(max, u, 64, 2, uint, maxu, m4)
 
 OP_RVV_FUNC(max, f, 32, 4, float, fmax, m4)
 OP_RVV_FUNC(max, f, 64, 2, float, fmax, m4)
@@ -110,13 +110,13 @@ OP_RVV_FUNC(max, f, 64, 2, float, fmax, m4)
 #undef current_func
 #define current_func(a, b) ((a) < (b) ? (a) : (b))
 OP_RVV_FUNC(min, i, 8, 16, int, min, m4)
-// OP_RVV_FUNC(min, u, 8, 16, uint, min, m4)
+OP_RVV_FUNC(min, u, 8, 16, uint, minu, m4)
 OP_RVV_FUNC(min, i, 16, 8, int, min, m4)
-// OP_RVV_FUNC(min, u, 16, 8, uint, min, m4)
+OP_RVV_FUNC(min, u, 16, 8, uint, minu, m4)
 OP_RVV_FUNC(min, i, 32, 4, int, min, m4)
-// OP_RVV_FUNC(min, u, 32, 4, uint, min, m4)
+OP_RVV_FUNC(min, u, 32, 4, uint, minu, m4)
 OP_RVV_FUNC(min, i, 64, 2, int, min, m4)
-// OP_RVV_FUNC(min, u, 64, 2, uint, min, m4)
+OP_RVV_FUNC(min, u, 64, 2, uint, minu, m4)
 
 OP_RVV_FUNC(min, f, 32, 4, float, fmin, m4)
 OP_RVV_FUNC(min, f, 64, 2, float, fmin, m4)
@@ -242,13 +242,13 @@ OP_RVV_FUNC(bxor, u, 64, 2, uint, xor, m4)
 #undef current_func
 #define current_func(a, b) ((a) > (b) ? (a) : (b))
 OP_RVV_FUNC_3BUFF(max, i, 8, 16, int, max, m4)
-// OP_RVV_FUNC_3BUFF(max, u, 8, 16, uint, max, m4)
+OP_RVV_FUNC_3BUFF(max, u, 8, 16, uint, maxu, m4)
 OP_RVV_FUNC_3BUFF(max, i, 16, 8, int, max, m4)
-// OP_RVV_FUNC_3BUFF(max, u, 16, 8, uint, max, m4)
+OP_RVV_FUNC_3BUFF(max, u, 16, 8, uint, maxu, m4)
 OP_RVV_FUNC_3BUFF(max, i, 32, 4, int, max, m4)
-// OP_RVV_FUNC_3BUFF(max, u, 32, 4, uint, max, m4)
+OP_RVV_FUNC_3BUFF(max, u, 32, 4, uint, maxu, m4)
 OP_RVV_FUNC_3BUFF(max, i, 64, 2, int, max, m4)
-// OP_RVV_FUNC_3BUFF(max, u, 64, 2, uint, max, m4)
+OP_RVV_FUNC_3BUFF(max, u, 64, 2, uint, maxu, m4)
 
 OP_RVV_FUNC_3BUFF(max, f, 32, 4, float, fmax, m4)
 OP_RVV_FUNC_3BUFF(max, f, 64, 2, float, fmax, m4)
@@ -259,13 +259,13 @@ OP_RVV_FUNC_3BUFF(max, f, 64, 2, float, fmax, m4)
 #undef current_func
 #define current_func(a, b) ((a) < (b) ? (a) : (b))
 OP_RVV_FUNC_3BUFF(min, i, 8, 16, int, min, m4)
-// OP_RVV_FUNC_3BUFF(min, u, 8, 16, uint, min, m4)
+OP_RVV_FUNC_3BUFF(min, u, 8, 16, uint, minu, m4)
 OP_RVV_FUNC_3BUFF(min, i, 16, 8, int, min, m4)
-// OP_RVV_FUNC_3BUFF(min, u, 16, 8, uint, min, m4)
+OP_RVV_FUNC_3BUFF(min, u, 16, 8, uint, minu, m4)
 OP_RVV_FUNC_3BUFF(min, i, 32, 4, int, min, m4)
-// OP_RVV_FUNC_3BUFF(min, u, 32, 4, uint, min, m4)
+OP_RVV_FUNC_3BUFF(min, u, 32, 4, uint, minu, m4)
 OP_RVV_FUNC_3BUFF(min, i, 64, 2, int, min, m4)
-// OP_RVV_FUNC_3BUFF(min, u, 64, 2, uint, min, m4)
+OP_RVV_FUNC_3BUFF(min, u, 64, 2, uint, minu, m4)
 
 OP_RVV_FUNC_3BUFF(min, f, 32, 4, float, fmin, m4)
 OP_RVV_FUNC_3BUFF(min, f, 64, 2, float, fmin, m4)
@@ -357,16 +357,6 @@ OP_RVV_FUNC_3BUFF(bxor, u, 64, 2, uint, xor, m4)
     [OMPI_OP_BASE_TYPE_INT64_T] = ompi_op_rvv_##ftype##_##name##_int64_t,   \
     [OMPI_OP_BASE_TYPE_UINT64_T] = ompi_op_rvv_##ftype##_##name##_uint64_t
 
-#define C_INTEGER_MAX_MIN(name, ftype)                                    \
-    [OMPI_OP_BASE_TYPE_INT8_T] = ompi_op_rvv_##ftype##_##name##_int8_t,   \
-    [OMPI_OP_BASE_TYPE_UINT8_T] = NULL,                                   \
-    [OMPI_OP_BASE_TYPE_INT16_T] = ompi_op_rvv_##ftype##_##name##_int16_t, \
-    [OMPI_OP_BASE_TYPE_UINT16_T] = NULL,                                  \
-    [OMPI_OP_BASE_TYPE_INT32_T] = ompi_op_rvv_##ftype##_##name##_int32_t, \
-    [OMPI_OP_BASE_TYPE_UINT32_T] = NULL,                                  \
-    [OMPI_OP_BASE_TYPE_INT64_T] = ompi_op_rvv_##ftype##_##name##_int64_t, \
-    [OMPI_OP_BASE_TYPE_UINT64_T] = NULL
-
 /** Floating point, including all the Fortran reals *********************/
 #define FLOAT(name, ftype)  ompi_op_rvv_##ftype##_##name##_float32_t
 #define DOUBLE(name, ftype) ompi_op_rvv_##ftype##_##name##_float64_t
@@ -392,12 +382,12 @@ ompi_op_base_handler_fn_t ompi_op_rvv_functions[OMPI_OP_BASE_FORTRAN_OP_MAX][OMP
         },
         /* Corresponds to MPI_MAX */
         [OMPI_OP_BASE_FORTRAN_MAX] = {
-            C_INTEGER_MAX_MIN(max, 2buff),
+            C_INTEGER(max, 2buff),
             FLOATING_POINT(max, 2buff),
         },
         /* Corresponds to MPI_MIN */
         [OMPI_OP_BASE_FORTRAN_MIN] = {
-            C_INTEGER_MAX_MIN(min, 2buff),
+            C_INTEGER(min, 2buff),
             FLOATING_POINT(min, 2buff),
         },
         /* Corresponds to MPI_SUM */
@@ -455,12 +445,12 @@ ompi_op_base_3buff_handler_fn_t ompi_op_rvv_3buff_functions[OMPI_OP_BASE_FORTRAN
         },
         /* Corresponds to MPI_MAX */
         [OMPI_OP_BASE_FORTRAN_MAX] = {
-            C_INTEGER_MAX_MIN(max, 3buff),
+            C_INTEGER(max, 3buff),
             FLOATING_POINT(max, 3buff),
         },
         /* Corresponds to MPI_MIN */
         [OMPI_OP_BASE_FORTRAN_MIN] = {
-            C_INTEGER_MAX_MIN(min, 3buff),
+            C_INTEGER(min, 3buff),
             FLOATING_POINT(min, 3buff),
         },
         /* Corresponds to MPI_SUM */
