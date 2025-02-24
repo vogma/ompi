@@ -141,7 +141,7 @@ AC_DEFUN([MCA_ompi_op_aarch64_CONFIG],[
     AM_CONDITIONAL([MCA_BUILD_ompi_op_has_neon_fp_support],
                    [test "$op_cv_neon_fp_support" = "yes"])
     AM_CONDITIONAL([MCA_BUILD_ompi_op_has_sve_support],
-                   [test "$op_sve_support" = "yes"])
+                   [test "$op_sve_support" = "1"])
     AC_SUBST(MCA_BUILD_ompi_op_has_neon_support)
     AC_SUBST(MCA_BUILD_ompi_op_has_neon_fp_support)
     AC_SUBST(MCA_BUILD_ompi_op_has_sve_support)
@@ -152,14 +152,16 @@ AC_DEFUN([MCA_ompi_op_aarch64_CONFIG],[
           [AC_DEFINE([OMPI_MCA_OP_HAVE_NEON], [1],[NEON supported in the current build])])
     AS_IF([test "$op_cv_neon_fp_support" = "yes"],
           [AC_DEFINE([OMPI_MCA_OP_HAVE_NEON_FP], [1],[NEON FP supported in the current build])])
-    AS_IF([test "$op_cv_sve_support" = "yes"],
+    AS_IF([test "$op_sve_support" = "1"],
           [AC_DEFINE([OMPI_MCA_OP_HAVE_SVE], [1],[SVE supported in the current build])])
+
+    AC_MSG_NOTICE([Value of build SVE_SUPPORT: $op_sve_support])
+    AC_MSG_NOTICE([Value of build SVE_FLAGS: $MCA_BUILD_OP_SVE_FLAGS])
+
 
     # If we have at least support for Neon
     AS_IF([test "$op_cv_neon_support" = "yes"],
           [$1],
           [$2])
-
-    AC_MSG_NOTICE([Value of MCA_BUILD_OP_SVE_FLAGS: $MCA_BUILD_OP_SVE_FLAGS])
 
 ])dnl

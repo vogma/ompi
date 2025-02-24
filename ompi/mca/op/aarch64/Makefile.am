@@ -48,6 +48,7 @@ endif
 if MCA_BUILD_ompi_op_has_sve_support
 specialized_op_libs += liblocal_ops_sve.la
 liblocal_ops_sve_la_SOURCES = op_aarch64_functions.c
+liblocal_ops_sve_la_CFLAGS = @MCA_BUILD_OP_SVE_FLAGS@
 liblocal_ops_sve_la_CPPFLAGS = -DGENERATE_SVE_CODE
 endif
 
