@@ -13,11 +13,10 @@
 #
 
 # MCA_ompi_op_arm_CONFIG([action-if-can-compile],
-#                [action-if-cant-compile])
+#                        [action-if-cant-compile])
 # ------------------------------------------------
 AC_DEFUN([MCA_ompi_op_aarch64_CONFIG],[
     AC_CONFIG_FILES([ompi/mca/op/aarch64/Makefile])
-
     case "${host}" in
         aarch64*|arm64*)
             op_aarch64_check="yes";;
@@ -72,12 +71,11 @@ AC_DEFUN([MCA_ompi_op_aarch64_CONFIG],[
                             [op_cv_neon_fp_support=yes],
                             [op_cv_neon_fp_support=no])])])
 
-    
-            #
+           #
            # Check for SVE support
            #
-           AC_CACHE_CHECK([for SVE support], [op_cv_sve_support], [
-             AC_MSG_RESULT([])      
+            AC_CACHE_CHECK([for SVE support], [op_cv_sve_support], [
+                AC_MSG_RESULT([])
              # initialize result variables
              op_cv_sve_support=no
              op_cv_sve_add_flags=no
@@ -85,11 +83,11 @@ AC_DEFUN([MCA_ompi_op_aarch64_CONFIG],[
              # first attempt: no extra flags
              AC_MSG_CHECKING([for SVE support (no additional flags)])
              AC_LINK_IFELSE(
-               [AC_LANG_SOURCE([[
+                [AC_LANG_SOURCE([[
 #if defined(__aarch64__) && defined(__ARM_FEATURE_SVE)
-  #include <arm_sve.h>
+#include <arm_sve.h>
 #else
-  #error "No support for __aarch64__ or SVE"
+#error "No support for __aarch64__ or SVE"
 #endif
 
 int main(void) {
@@ -104,10 +102,10 @@ int main(void) {
              )
 
              # second attempt: use +sve attribute
-             AS_IF([test "$op_cv_sve_support" = "no"],[
-               AC_MSG_CHECKING([for SVE support (with +sve)])
-               AC_LINK_IFELSE(
-                 [AC_LANG_SOURCE([[
+            AS_IF([test "$op_cv_sve_support" = "no"],[
+                AC_MSG_CHECKING([for SVE support (with +sve)])
+                AC_LINK_IFELSE(
+                    [AC_LANG_SOURCE([[
 #if defined(__aarch64__)
   #include <arm_sve.h>
 #else
@@ -139,7 +137,6 @@ int main(void) {
                    [test "$op_cv_neon_fp_support" = "yes"])
     AM_CONDITIONAL([MCA_BUILD_ompi_op_has_sve_support],
                    [test "$op_cv_sve_support" = "yes"])
-
     AC_SUBST(MCA_BUILD_ompi_op_has_neon_support)
     AC_SUBST(MCA_BUILD_ompi_op_has_neon_fp_support)
     AC_SUBST(MCA_BUILD_ompi_op_has_sve_support)
@@ -158,5 +155,4 @@ int main(void) {
     AS_IF([test "$op_cv_neon_support" = "yes" || test "$op_cv_sve_support" = "yes" ],
           [$1],
           [$2])
-
 ])dnl
