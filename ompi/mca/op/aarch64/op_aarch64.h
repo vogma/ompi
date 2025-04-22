@@ -24,7 +24,7 @@
 
 BEGIN_C_DECLS
 
-#if defined(OMPI_MCA_OP_SVE_EXTRA_FLAGS)
+#if OMPI_MCA_OP_SVE_EXTRA_FLAGS
 #define SVE_ATTR __attribute__ ((__target__ ("+sve")))
 #else
 #define SVE_ATTR

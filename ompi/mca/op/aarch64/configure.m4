@@ -148,7 +148,8 @@ int main(void) {
     AS_IF([test "$op_cv_sve_support" = "yes"],
           [AC_DEFINE([OMPI_MCA_OP_HAVE_SVE], [1],[SVE supported in the current build])])
     AS_IF([test "$op_cv_sve_add_flags" = "yes"],
-          [AC_DEFINE([OMPI_MCA_OP_SVE_EXTRA_FLAGS], [1],[SVE supported with additional compile attributes])])
+          [AC_DEFINE([OMPI_MCA_OP_SVE_EXTRA_FLAGS], [1],[SVE supported with additional compile attributes])],
+          [AC_DEFINE([OMPI_MCA_OP_SVE_EXTRA_FLAGS], [0],[SVE not supported])])
 
 
     # If we have at least support for Neon or SVE
