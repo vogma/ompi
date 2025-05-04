@@ -1,7 +1,7 @@
 /*
  * Copyright (C) Mellanox Technologies Ltd. 2001-2017. ALL RIGHTS RESERVED.
  * Copyright (c) 2018      Amazon.com, Inc. or its affiliates.  All Rights reserved.
- * Copyright (c) 2021      Triad National Security, LLC. All rights
+ * Copyright (c) 2021-2025 Triad National Security, LLC. All rights
  *                         reserved.
  *
  * Copyright (c) 2022      IBM Corporation.  All rights reserved.
@@ -352,6 +352,8 @@ static int component_finalize(void) {
     opal_common_ucx_mca_deregister();
     if (mca_osc_ucx_component.env_initialized) {
         opal_common_ucx_wpool_finalize(mca_osc_ucx_component.wpool);
+        OBJ_DESTRUCT(&mca_osc_ucx_component.accumulate_requests);
+        OBJ_DESTRUCT(&mca_osc_ucx_component.requests);
     }
     opal_common_ucx_wpool_free(mca_osc_ucx_component.wpool);
 
@@ -1068,6 +1070,7 @@ int ompi_osc_ucx_win_attach(struct ompi_win_t *win, void *base, size_t len) {
         memmove((void *)&module->state.dynamic_wins[insert_index+1],
                 (void *)&module->state.dynamic_wins[insert_index],
                 (OMPI_OSC_UCX_ATTACH_MAX - (insert_index + 1)) * sizeof(ompi_osc_dynamic_win_info_t));
+        module->local_dynamic_win_info[insert_index].refcnt = 0;
     } else {
         insert_index = 0;
     }

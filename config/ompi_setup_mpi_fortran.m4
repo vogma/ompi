@@ -138,11 +138,6 @@ AC_DEFUN([OMPI_SETUP_MPI_FORTRAN],[
     AC_DEFINE([ompi_fortran_bogus_type_t], [int],
               [A bogus type that allows us to have sentinel type values that are still valid])
 
-    # These get filled in as we check for each type
-    OMPI_FORTRAN_IKINDS=
-    OMPI_FORTRAN_RKINDS=
-    OMPI_FORTRAN_CKINDS=
-
     # We want to set the #define's for all of these, so invoke the macros
     # regardless of whether we have F77 support or not.
     OMPI_FORTRAN_CHECK([CHARACTER], [yes],
@@ -284,14 +279,6 @@ AC_DEFUN([OMPI_SETUP_MPI_FORTRAN],[
                        [$OMPI_FORTRAN_STATUS_SIZE],
                        [The number or Fortran INTEGER in MPI Status])
 
-    # Setup for the compilers that don't support ignore TKR functionality
-    OPAL_UNIQ(OMPI_FORTRAN_IKINDS)
-    AC_SUBST(OMPI_FORTRAN_IKINDS)
-    OPAL_UNIQ(OMPI_FORTRAN_RKINDS)
-    AC_SUBST(OMPI_FORTRAN_RKINDS)
-    OPAL_UNIQ(OMPI_FORTRAN_CKINDS)
-    AC_SUBST(OMPI_FORTRAN_CKINDS)
-
     # We can't use C_INTxx_T KIND values in mpif.h because many
     # existing MPI Fortran applications are of the form:
     #
@@ -405,16 +392,15 @@ end program]])],
           ])
 
     # If we got here, we can build the mpi module if it was requested.
-    # Decide whether to build the ignore TKR version or the
-    # non-ignore-TKR/legacy version.
+    # We only support compilers which have an ignore TKR feature.
     AS_IF([test $OMPI_TRY_FORTRAN_BINDINGS -ge $OMPI_FORTRAN_USEMPI_BINDINGS && \
            test $ompi_fortran_happy -eq 1],
           [OMPI_BUILD_FORTRAN_BINDINGS=$OMPI_FORTRAN_USEMPI_BINDINGS
            AS_IF([test $OMPI_FORTRAN_HAVE_IGNORE_TKR -eq 1],
                  [OMPI_FORTRAN_USEMPI_DIR=mpi/fortran/use-mpi-ignore-tkr
                   OMPI_FORTRAN_USEMPI_LIB=-l${with_libmpi_name}_usempi_ignore_tkr],
-                 [OMPI_FORTRAN_USEMPI_DIR=mpi/fortran/use-mpi-tkr
-                  OMPI_FORTRAN_USEMPI_LIB=-l${with_libmpi_name}_usempi])
+                 [AC_MSG_WARN([** Fortran compiler does not support ignoring TKR.  Please use a newer fortran compiler.])
+                  AC_MSG_ERROR([*** Cannot continue])])
           ])
 
     OMPI_FORTRAN_HAVE_ISO_C_BINDING=0
@@ -449,14 +435,27 @@ end program]])],
     # If we got all the stuff from above, then also look for the new
     # F08 syntax that we can use for the use_mpif08 module.
 
-    # We need to have ignore TKR functionality to build the mpi_f08
+    OMPI_FORTRAN_HAVE_TS=0
+    OMPI_MPI_SUBARRAYS_SUPPORTED=.false.
+    OMPI_MPI_ASYNC_PROTECTS_NONBLOCKING=.false.
+    AS_IF([test $OMPI_TRY_FORTRAN_BINDINGS -ge $OMPI_FORTRAN_USEMPIF08_BINDINGS],
+          [OMPI_FORTRAN_CHECK_TS([OMPI_FORTRAN_HAVE_TS=1])])
+
+    # We need to have ignore TKR or the ISO Fortran bindings functionality to build the mpi_f08
     # module
-    AS_IF([test $OMPI_TRY_FORTRAN_BINDINGS -ge $OMPI_FORTRAN_USEMPIF08_BINDINGS && \
-           test $OMPI_FORTRAN_HAVE_IGNORE_TKR -eq 1],
-          [OMPI_BUILD_FORTRAN_BINDINGS=$OMPI_FORTRAN_USEMPIF08_BINDINGS
-           OMPI_FORTRAN_F08_PREDECL=$OMPI_FORTRAN_IGNORE_TKR_PREDECL
-           OMPI_FORTRAN_F08_TYPE=$OMPI_FORTRAN_IGNORE_TKR_TYPE
-          ])
+    AS_IF([test $OMPI_TRY_FORTRAN_BINDINGS -ge $OMPI_FORTRAN_USEMPIF08_BINDINGS],
+          [AS_IF([test $OMPI_FORTRAN_HAVE_IGNORE_TKR -eq 1],
+                 [OMPI_BUILD_FORTRAN_BINDINGS=$OMPI_FORTRAN_USEMPIF08_BINDINGS
+                  OMPI_FORTRAN_F08_PREDECL=$OMPI_FORTRAN_IGNORE_TKR_PREDECL
+                  OMPI_FORTRAN_F08_TYPE=$OMPI_FORTRAN_IGNORE_TKR_TYPE
+                 ])
+           AS_IF([test $OMPI_FORTRAN_HAVE_TS -eq 1],
+                 [OMPI_BUILD_FORTRAN_BINDINGS=$OMPI_FORTRAN_USEMPIF08_BINDINGS
+                  OMPI_MPI_SUBARRAYS_SUPPORTED=.true.
+                  OMPI_MPI_ASYNC_PROTECTS_NONBLOCKING=.true.])])
+
+    AC_SUBST(OMPI_MPI_SUBARRAYS_SUPPORTED)
+    AC_SUBST(OMPI_MPI_ASYNC_PROTECTS_NONBLOCKING)
 
     # The overall "_BIND_C" variable will be set to 1 if we have all
     # the necessary forms of BIND(C)
@@ -590,8 +589,6 @@ end type test_mpi_handle],
           ])
 
     OMPI_FORTRAN_NEED_WRAPPER_ROUTINES=1
-    OMPI_FORTRAN_F08_PREDECL='!'
-    OMPI_FORTRAN_F08_TYPE=real
     OMPI_FORTRAN_HAVE_F08_ASSUMED_RANK=0
     AS_IF([test $OMPI_TRY_FORTRAN_BINDINGS -ge $OMPI_FORTRAN_USEMPIF08_BINDINGS && \
            test $OMPI_BUILD_FORTRAN_BINDINGS -ge $OMPI_FORTRAN_USEMPIF08_BINDINGS],
@@ -599,8 +596,6 @@ end type test_mpi_handle],
            OMPI_FORTRAN_CHECK_F08_ASSUMED_RANK(
                [ # If we have assumed rank, we can build the use
                  # mpi_f08 module "better"
-                OMPI_FORTRAN_F08_PREDECL='!'
-                OMPI_FORTRAN_F08_TYPE='type(*), dimension(..)'
                 OMPI_FORTRAN_HAVE_F08_ASSUMED_RANK=1])
 
                # Which mpi_f08 implementation are we using?
@@ -629,6 +624,12 @@ end type test_mpi_handle],
                [OMPI_FORTRAN_ELEMENTAL_TYPE="ELEMENTAL"],
                [OMPI_FORTRAN_ELEMENTAL_TYPE=])])
     AC_SUBST(OMPI_FORTRAN_ELEMENTAL_TYPE)
+
+    OMPI_FORTRAN_HAVE_C_ISO_FORTRAN=0
+    AS_IF([test $OMPI_TRY_FORTRAN_BINDINGS -ge $OMPI_FORTRAN_USEMPIF08_BINDINGS && \
+           test $OMPI_BUILD_FORTRAN_BINDINGS -ge $OMPI_FORTRAN_USEMPIF08_BINDINGS],
+          [OMPI_FORTRAN_CHECK_TS([OMPI_FORTRAN_HAVE_TS=1],
+                                 [OMPI_FORTRAN_HAVE_TS=0])])
 
     # Note: the current implementation *only* has wrappers;
     # there is no optimized implementation for a "good"
@@ -792,10 +793,9 @@ end type test_mpi_handle],
     # This goes into mpifort-wrapper-data.txt
     AC_SUBST(OMPI_FORTRAN_USEMPIF08_LIB)
 
-    # These go into interfaces/mpi-f08-interfaces-[no]bind.h (and
-    # mpi-f*-interfaces*.h files)
-    AC_SUBST(OMPI_FORTRAN_F08_PREDECL)
-    AC_SUBST(OMPI_FORTRAN_F08_TYPE)
+    # These go into mod/mpi-f08-interfaces.h
+    AC_SUBST(OMPI_F08_IGNORE_TKR_PREDECL)
+    AC_SUBST(OMPI_F08_IGNORE_TKR_TYPE)
 
     AC_SUBST(OMPI_MPI_PREFIX)
     AC_SUBST(OMPI_MPI_BIND_PREFIX)
@@ -876,6 +876,25 @@ end type test_mpi_handle],
 
     # For configure-fortran-output.h
     AC_SUBST(OMPI_FORTRAN_HAVE_BIND_C)
+
+    AM_CONDITIONAL(OMPI_FORTRAN_HAVE_TS,
+                   [test $OMPI_FORTRAN_HAVE_TS -eq 1])
+    AC_SUBST(OMPI_FORTRAN_HAVE_TS)
+    AC_DEFINE_UNQUOTED([OMPI_FORTRAN_HAVE_TS],
+                       [$OMPI_FORTRAN_HAVE_TS],
+                       [For ompi/mpi/fortran/use-mpi-f08/base/ts.*: whether the compiler supports TS 29113 or not])
+
+    AS_IF([test $OMPI_FORTRAN_HAVE_TS -eq 1],
+          [OMPI_F08_IGNORE_TKR_TYPE="type(*), dimension(..)"
+           OMPI_F08_IGNORE_TKR_PREDECL="no attribute required for"
+           OMPI_F08_BINDINGS_EXTENSION="ts"
+           OMPI_F08_BINDINGS_TS_SUFFIX="ts"],
+          [OMPI_F08_IGNORE_TKR_TYPE=$OMPI_FORTRAN_IGNORE_TKR_TYPE
+           OMPI_F08_IGNORE_TKR_PREDECL=${OMPI_FORTRAN_IGNORE_TKR_PREDECL:1}
+           OMPI_F08_BINDINGS_EXTENSION="f"
+           OMPI_F08_BINDINGS_TS_SUFFIX=""])
+    AC_SUBST(OMPI_F08_BINDINGS_EXTENSION)
+    AC_SUBST(OMPI_F08_BINDINGS_TS_SUFFIX)
 
     # Somewhat redundant because ompi/Makefile.am won't traverse into
     # ompi/mpi/fortran/use-mpi-f08 if it's not to be built, but we

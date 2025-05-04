@@ -8,23 +8,8 @@ MPI_T_pvar_get_info
 
 :ref:`MPI_T_pvar_get_info` |mdash| Query information from a performance variable
 
-
-SYNTAX
-------
-
-
-C Syntax
-^^^^^^^^
-
-.. code-block:: c
-
-   #include <mpi.h>
-
-   int MPI_T_pvar_get_info(int pvar_index, char *name, int *name_len,
-                           int *verbosity, int *var_class, MPI_Datatype *datatype, MPI_T_enum *enumtype,
-                           char *desc, int *desc_len, int *bind, int *readonly, int *continuous,
-                           int *atomic)
-
+.. The following file was automatically generated
+.. include:: ./bindings/mpi_t_pvar_get_info.rst
 
 INPUT PARAMETERS
 ----------------
@@ -166,7 +151,9 @@ returned in the *bind* parameter may be one of the following:
 
 * ``MPI_T_BIND_MPI_INFO``: MPI info object
 
-For more information see MPI-3 section 14.3.2.
+* ``MPI_T_BIND_MPI_SESSION``: MPI session
+
+For more information see MPI-4 section 14.3.2.
 
 
 NOTES

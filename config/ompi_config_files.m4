@@ -32,16 +32,12 @@ AC_DEFUN([OMPI_CONFIG_FILES],[
         ompi/mpi/fortran/mpif-h/profile/Makefile
         ompi/mpi/fortran/use-mpi/Makefile
         ompi/mpi/fortran/use-mpi/mpi-types.F90
-        ompi/mpi/fortran/use-mpi-tkr/Makefile
-        ompi/mpi/fortran/use-mpi-tkr/fortran_sizes.h
-        ompi/mpi/fortran/use-mpi-tkr/fortran_kinds.sh
         ompi/mpi/fortran/use-mpi-ignore-tkr/Makefile
         ompi/mpi/fortran/use-mpi-ignore-tkr/mpi-ignore-tkr-interfaces.h
         ompi/mpi/fortran/use-mpi-ignore-tkr/mpi-ignore-tkr-file-interfaces.h
         ompi/mpi/fortran/use-mpi-ignore-tkr/mpi-ignore-tkr-removed-interfaces.h
         ompi/mpi/fortran/use-mpi-f08/Makefile
         ompi/mpi/fortran/use-mpi-f08/base/Makefile
-        ompi/mpi/fortran/use-mpi-f08/profile/Makefile
         ompi/mpi/fortran/use-mpi-f08/bindings/Makefile
         ompi/mpi/fortran/use-mpi-f08/mod/Makefile
         ompi/mpi/fortran/use-mpi-f08/mod/mpi-f08-interfaces.h

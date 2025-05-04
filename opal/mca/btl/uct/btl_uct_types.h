@@ -2,6 +2,7 @@
 /*
  * Copyright (c) 2018      Los Alamos National Security, LLC. All rights
  *                         reserved.
+ * Copyright (c) 2025      Google, LLC. All rights reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -14,6 +15,8 @@
 
 #    include "opal/mca/btl/btl.h"
 
+#include "opal/mca/timer/base/base.h"
+
 /* forward declarations */
 struct mca_btl_uct_module_t;
 struct mca_btl_base_endpoint_t;
@@ -24,8 +27,10 @@ struct mca_btl_uct_base_frag_t;
 #    define MCA_BTL_UCT_ENDPOINT_FLAG_CONN_REC 0x1
 /** remote endpoint read */
 #    define MCA_BTL_UCT_ENDPOINT_FLAG_CONN_REM_READY 0x2
+/** local UCT endpoint connected */
+#    define MCA_BTL_UCT_ENDPOINT_FLAG_EP_CONNECTED 0x4
 /** connection was established */
-#    define MCA_BTL_UCT_ENDPOINT_FLAG_CONN_READY 0x4
+#    define MCA_BTL_UCT_ENDPOINT_FLAG_CONN_READY 0x8
 
 /* AM tags */
 /** BTL fragment */
@@ -100,6 +105,9 @@ struct mca_btl_uct_tl_endpoint_t {
 
     /** UCT endpoint handle */
     uct_ep_h uct_ep;
+
+    /** Time of last connection message. */
+    opal_timer_t last_connection_req;
 };
 
 typedef struct mca_btl_uct_tl_endpoint_t mca_btl_uct_tl_endpoint_t;

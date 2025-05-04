@@ -121,6 +121,56 @@ Open MPI's MPI_T categories are organized hierarchically:
    -  For example, the tcp component can be found under the opal
       framework in the opal layer.
 
+MPI_T Events
+^^^^^^^^^^^^
+
+Open MPI provides a set of stub interfaces for MPI_T events. More complete
+support for MPI_T events will be provided in a future release of Open MPI.
 
 .. seealso::
+   * :ref:`MPI_T_category_changed`
+   * :ref:`MPI_T_category_get_categories`
+   * :ref:`MPI_T_category_get_cvars`
+   * :ref:`MPI_T_category_get_info`
+   * :ref:`MPI_T_category_get_num`
+   * :ref:`MPI_T_category_get_pvars`
+   * :ref:`MPI_T_cvar_get_info`
+   * :ref:`MPI_T_cvar_get_num`
+   * :ref:`MPI_T_cvar_handle_alloc`
+   * :ref:`MPI_T_cvar_handle_free`
+   * :ref:`MPI_T_cvar_read`
+   * :ref:`MPI_T_cvar_write`
+   * :ref:`MPI_T_enum_get_info`
+   * :ref:`MPI_T_enum_get_item`
+   * :ref:`MPI_T_event_callback_get_info`
+   * :ref:`MPI_T_event_callback_set_info`
+   * :ref:`MPI_T_event_copy`
+   * :ref:`MPI_T_event_get_index`
+   * :ref:`MPI_T_event_get_info`
+   * :ref:`MPI_T_event_get_num`
+   * :ref:`MPI_T_event_get_source`
+   * :ref:`MPI_T_event_get_timestamp`
+   * :ref:`MPI_T_event_handle_alloc`
+   * :ref:`MPI_T_event_handle_free`
+   * :ref:`MPI_T_event_handle_get_info`
+   * :ref:`MPI_T_event_handle_set_info`
+   * :ref:`MPI_T_event_read`
+   * :ref:`MPI_T_event_register_callback`
+   * :ref:`MPI_T_event_set_dropped_handler`
+   * :ref:`MPI_T_finalize`
    * :ref:`MPI_T_init_thread`
+   * :ref:`MPI_T_pvar_get_info`
+   * :ref:`MPI_T_pvar_get_num`
+   * :ref:`MPI_T_pvar_handle_alloc`
+   * :ref:`MPI_T_pvar_handle_free`
+   * :ref:`MPI_T_pvar_read`
+   * :ref:`MPI_T_pvar_readreset`
+   * :ref:`MPI_T_pvar_reset`
+   * :ref:`MPI_T_pvar_session_create`
+   * :ref:`MPI_T_pvar_session_free`
+   * :ref:`MPI_T_pvar_start`
+   * :ref:`MPI_T_pvar_stop`
+   * :ref:`MPI_T_pvar_write`
+   * :ref:`MPI_T_source_get_info`
+   * :ref:`MPI_T_source_get_num`
+   * :ref:`MPI_T_source_get_timestamp`

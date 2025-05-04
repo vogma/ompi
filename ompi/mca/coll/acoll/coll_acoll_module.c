@@ -60,17 +60,17 @@ mca_coll_base_module_t *mca_coll_acoll_comm_query(struct ompi_communicator_t *co
 {
     mca_coll_acoll_module_t *acoll_module;
 
-    acoll_module = OBJ_NEW(mca_coll_acoll_module_t);
-    if (NULL == acoll_module) {
-        return NULL;
-    }
-
     if (OMPI_COMM_IS_INTER(comm)) {
         *priority = 0;
         return NULL;
     }
     if (OMPI_COMM_IS_INTRA(comm) && ompi_comm_size(comm) < 2) {
         *priority = 0;
+        return NULL;
+    }
+
+    acoll_module = OBJ_NEW(mca_coll_acoll_module_t);
+    if (NULL == acoll_module) {
         return NULL;
     }
 
@@ -158,6 +158,7 @@ mca_coll_base_module_t *mca_coll_acoll_comm_query(struct ompi_communicator_t *co
 
     acoll_module->super.coll_allgather = mca_coll_acoll_allgather;
     acoll_module->super.coll_allreduce = mca_coll_acoll_allreduce_intra;
+    acoll_module->super.coll_alltoall = mca_coll_acoll_alltoall;
     acoll_module->super.coll_barrier = mca_coll_acoll_barrier_intra;
     acoll_module->super.coll_bcast = mca_coll_acoll_bcast;
     acoll_module->super.coll_gather = mca_coll_acoll_gather_intra;
@@ -181,6 +182,7 @@ static int acoll_module_enable(mca_coll_base_module_t *module, struct ompi_commu
 
    ACOLL_INSTALL_COLL_API(comm, acoll_module, allgather);
    ACOLL_INSTALL_COLL_API(comm, acoll_module, allreduce);
+   ACOLL_INSTALL_COLL_API(comm, acoll_module, alltoall);
    ACOLL_INSTALL_COLL_API(comm, acoll_module, barrier);
    ACOLL_INSTALL_COLL_API(comm, acoll_module, bcast);
    ACOLL_INSTALL_COLL_API(comm, acoll_module, gather);
@@ -201,6 +203,7 @@ static int acoll_module_disable(mca_coll_base_module_t *module, struct ompi_comm
 
     ACOLL_UNINSTALL_COLL_API(comm, acoll_module, allgather);
     ACOLL_UNINSTALL_COLL_API(comm, acoll_module, allreduce);
+    ACOLL_UNINSTALL_COLL_API(comm, acoll_module, alltoall);
     ACOLL_UNINSTALL_COLL_API(comm, acoll_module, barrier);
     ACOLL_UNINSTALL_COLL_API(comm, acoll_module, bcast);
     ACOLL_UNINSTALL_COLL_API(comm, acoll_module, gather);

@@ -21,6 +21,7 @@
 # Copyright (c) 2018      FUJITSU LIMITED.  All rights reserved.
 # Copyright (c) 2021      Amazon.com, Inc. or its affiliates.  All Rights
 #                         reserved.
+# Copyright (c) 2025      Jeffrey M. Squyres.  All rights reserved.
 # $COPYRIGHT$
 #
 # Additional copyrights may follow
@@ -83,7 +84,7 @@ SUBDIRS = \
         mpi/fortran/mpif-h \
         mpi/fortran/use-mpi \
         $(OMPI_MPIEXT_USEMPI_DIR) \
-        $(OMPI_FORTRAN_USEMPI_DIR) \
+        mpi/fortran/use-mpi-ignore-tkr \
         mpi/fortran/mpiext-use-mpi \
         mpi/fortran/use-mpi-f08/base \
         mpi/fortran/use-mpi-f08/mod \
@@ -113,7 +114,6 @@ DIST_SUBDIRS = \
         mpi/fortran/base \
         mpi/fortran/mpif-h \
         mpi/fortran/use-mpi \
-        mpi/fortran/use-mpi-tkr \
         mpi/fortran/use-mpi-ignore-tkr \
         mpi/fortran/mpiext-use-mpi \
         mpi/fortran/use-mpi-f08 \
@@ -154,7 +154,7 @@ lib@OMPI_LIBMPI_NAME@_la_LDFLAGS = \
 headers =
 noinst_LTLIBRARIES =
 include_HEADERS =
-dist_ompidata_DATA =
+EXTRA_DIST =
 lib@OMPI_LIBMPI_NAME@_la_SOURCES += $(headers)
 
 # Conditionally install the header files

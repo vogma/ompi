@@ -18,6 +18,7 @@
  * Copyright (c) 2016-2017 IBM Corporation. All rights reserved.
  * Copyright (c) 2024      Triad National Security, LLC. All rights
  *                         reserved.
+ * Copyright (c) 2024-2025 Advanced Micro Devices, Inc. All rights reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -34,7 +35,7 @@
 #include "ompi/runtime/params.h"
 #include "ompi/mca/io/base/base.h"
 #include "ompi/info/info.h"
-
+#include "ompi/info/info_memkind.h"
 
 opal_mutex_t ompi_mpi_file_bootstrap_mutex = OPAL_MUTEX_STATIC_INIT;
 
@@ -123,7 +124,11 @@ int ompi_file_open(struct ompi_communicator_t *comm, const char *filename,
     if (info) {
         opal_info_dup(info, &(file->super.s_info));
     }
-
+    ompi_info_memkind_assert_type type;
+    ompi_info_memkind_copy_or_set (&comm->instance->super, &file->super, info, &type);
+    if (OMPI_INFO_MEMKIND_ASSERT_NO_ACCEL == type) {
+        file->f_flags |= OMPI_FILE_ASSERT_NO_ACCEL_BUF;
+    }
     file->f_amode = amode;
     file->f_filename = strdup(filename);
     if (NULL == file->f_filename) {

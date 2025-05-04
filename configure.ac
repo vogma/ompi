@@ -29,6 +29,7 @@
 # Copyright (c) 2019      Triad National Security, LLC. All rights
 #                         reserved.
 # Copyright (c) 2023      Jeffrey M. Squyres.  All rights reserved.
+# Copyright (c) 2025      Nanook Consulting  All rights reserved.
 # $COPYRIGHT$
 #
 # Additional copyrights may follow
@@ -188,6 +189,12 @@ AC_MSG_RESULT([$am__api_version])
 AC_MSG_CHECKING([for bootstrap Libtool version])
 ltversion=`grep VERSION= $srcdir/config/ltmain.sh | head -n 1 | cut -d= -f2`
 AC_MSG_RESULT([$ltversion])
+
+# Ensure mpi.h.in and mca_base_event.h have consistent callback safety values
+AC_DEFINE_UNQUOTED([OPAL_MCA_BASE_CB_REQUIRE_NONE], [0], [Keeping OPAL and OMPI values in sync])
+AC_DEFINE_UNQUOTED([OPAL_MCA_BASE_CB_REQUIRE_MPI_RESTRICTED], [1], [Keeping OPAL and OMPI values in sync])
+AC_DEFINE_UNQUOTED([OPAL_MCA_BASE_CB_REQUIRE_THREAD_SAFE], [2], [Keeping OPAL and OMPI values in sync])
+AC_DEFINE_UNQUOTED([OPAL_MCA_BASE_CB_REQUIRE_ASYNC_SIGNAL_SAFE], [3], [Keeping OPAL and OMPI values in sync])
 
 # List header files to generate
 
@@ -989,7 +996,7 @@ AC_CACHE_SAVE
 opal_show_title "System-specific tests"
 
 ##################################
-OPAL_CHECK_OS_FLAVORS
+OAC_CHECK_OS_FLAVORS
 
 
 
@@ -1398,6 +1405,7 @@ if test $ac_cv_header_sys_synch_h = yes ; then
     AC_DEFINE(OPAL_HAVE_SYS_SYNCH_H, 1,
               [Do not use outside of mpi.h.  Define to 1 if you have the <sys/synch.h> header file.])
 fi
+
 
 # If there is a local hook for each project, call it.  This allows 3rd
 # parties to add configuration steps to OPAL and/or OMPI simply

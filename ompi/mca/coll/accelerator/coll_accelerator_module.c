@@ -6,7 +6,7 @@
  * Copyright (c) 2014-2024 NVIDIA Corporation.  All rights reserved.
  * Copyright (c) 2019      Research Organization for Information Science
  *                         and Technology (RIST).  All rights reserved.
- * Copyright (c) 2023      Advanced Micro Devices, Inc. All rights reserved.
+ * Copyright (c) 2023-2024 Advanced Micro Devices, Inc. All rights reserved.
  * Copyright (c) 2024      Triad National Security, LLC. All rights reserved.
  * $COPYRIGHT$
  *
@@ -82,6 +82,12 @@ mca_coll_accelerator_comm_query(struct ompi_communicator_t *comm,
         return NULL;
     }
 
+    if (OMPI_COMM_CHECK_ASSERT_NO_ACCEL_BUF(comm)) {
+        opal_output_verbose(10, ompi_coll_base_framework.framework_output,
+			    "coll:accelerator:comm_query: NO_ACCEL_BUF assertion set: disqualifying myself");
+	return NULL;
+    }
+
     accelerator_module = OBJ_NEW(mca_coll_accelerator_module_t);
     if (NULL == accelerator_module) {
         return NULL;
@@ -93,9 +99,13 @@ mca_coll_accelerator_comm_query(struct ompi_communicator_t *comm,
     accelerator_module->super.coll_module_enable = mca_coll_accelerator_module_enable;
     accelerator_module->super.coll_module_disable = mca_coll_accelerator_module_disable;
 
+    accelerator_module->super.coll_allgather  = mca_coll_accelerator_allgather;
     accelerator_module->super.coll_allreduce  = mca_coll_accelerator_allreduce;
+    accelerator_module->super.coll_alltoall   = mca_coll_accelerator_alltoall;
     accelerator_module->super.coll_reduce     = mca_coll_accelerator_reduce;
+    accelerator_module->super.coll_bcast      = mca_coll_accelerator_bcast;
     accelerator_module->super.coll_reduce_local         = mca_coll_accelerator_reduce_local;
+    accelerator_module->super.coll_reduce_scatter       = mca_coll_accelerator_reduce_scatter;
     accelerator_module->super.coll_reduce_scatter_block = mca_coll_accelerator_reduce_scatter_block;
     if (!OMPI_COMM_IS_INTER(comm)) {
         accelerator_module->super.coll_scan       = mca_coll_accelerator_scan;
@@ -141,9 +151,13 @@ mca_coll_accelerator_module_enable(mca_coll_base_module_t *module,
 {
     mca_coll_accelerator_module_t *s = (mca_coll_accelerator_module_t*) module;
 
+    ACCELERATOR_INSTALL_COLL_API(comm, s, allgather);
     ACCELERATOR_INSTALL_COLL_API(comm, s, allreduce);
+    ACCELERATOR_INSTALL_COLL_API(comm, s, alltoall);
+    ACCELERATOR_INSTALL_COLL_API(comm, s, bcast);
     ACCELERATOR_INSTALL_COLL_API(comm, s, reduce);
     ACCELERATOR_INSTALL_COLL_API(comm, s, reduce_local);
+    ACCELERATOR_INSTALL_COLL_API(comm, s, reduce_scatter);
     ACCELERATOR_INSTALL_COLL_API(comm, s, reduce_scatter_block);
     if (!OMPI_COMM_IS_INTER(comm)) {
         /* MPI does not define scan/exscan on intercommunicators */
@@ -160,9 +174,13 @@ mca_coll_accelerator_module_disable(mca_coll_base_module_t *module,
 {
     mca_coll_accelerator_module_t *s = (mca_coll_accelerator_module_t*) module;
 
+    ACCELERATOR_UNINSTALL_COLL_API(comm, s, allgather);
     ACCELERATOR_UNINSTALL_COLL_API(comm, s, allreduce);
+    ACCELERATOR_UNINSTALL_COLL_API(comm, s, alltoall);
     ACCELERATOR_UNINSTALL_COLL_API(comm, s, reduce);
+    ACCELERATOR_UNINSTALL_COLL_API(comm, s, bcast);
     ACCELERATOR_UNINSTALL_COLL_API(comm, s, reduce_local);
+    ACCELERATOR_UNINSTALL_COLL_API(comm, s, reduce_scatter);
     ACCELERATOR_UNINSTALL_COLL_API(comm, s, reduce_scatter_block);
     if (!OMPI_COMM_IS_INTER(comm))
     {

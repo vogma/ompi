@@ -11,6 +11,7 @@
 # Copyright (c) 2020      Amazon.com, Inc. or its affiliates.
 #                         All Rights reserved.
 #
+# Copyright (c) 2025      Nanook Consulting  All rights reserved.
 # $COPYRIGHT$
 #
 # Additional copyrights may follow
@@ -81,12 +82,6 @@ my $full_hostname;
 
 # Patch program
 my $patch_prog = "patch";
-# Solaris "patch" doesn't understand unified diffs, and will cause
-# autogen.pl to hang with a "File to patch:" prompt. Default to Linux
-# "patch", but use "gpatch" on Solaris.
-if ($^O eq "solaris") {
-    $patch_prog = "gpatch";
-}
 
 $username = $ENV{USER} || getpwuid($>);
 $full_hostname = $ENV{HOSTNAME} || `hostname`;
@@ -867,6 +862,10 @@ sub patch_autotools_output {
         verbose "$indent_str"."Patching \"-pthread\" option for NAG compiler in ltmain.sh\n";
         system("$patch_prog -N -p0 < $topdir/config/ltmain_nag_pthread.diff >/dev/null 2>&1");
         unlink("config/ltmain.sh.rej");
+
+        verbose "$indent_str"."Patching \"-framework\" option for flang compiler in ltmain.sh\n";
+        system("$patch_prog -N -p0 < $topdir/config/ltmain_flang_darwin.diff >/dev/null 2>&1");
+        unlink("config/ltmain.sh.rej");
     }
 
     # If there's no configure script, there's nothing else to do.
@@ -1071,8 +1070,14 @@ sub patch_autotools_output {
         lt_prog_compiler_static_FC=\'-Bstatic\'
         ;;';
     $replace_string = "case \$cc_basename in
+      flang*)
+        # flang compiler
+        lt_prog_compiler_wl_FC='-Wl,'
+        lt_prog_compiler_pic_FC='-fPIC'
+        lt_prog_compiler_static_FC='-static'
+        ;;
       icc* | ifort*)
-        #Intel Fortran compiler
+        # Intel Fortran compiler
         lt_prog_compiler_wl_FC='-Wl,'
         lt_prog_compiler_pic_FC='-fno-common -PIC'
         lt_prog_compiler_static_FC=''
@@ -1108,6 +1113,23 @@ sub patch_autotools_output {
         push(@verbose_out, $indent_str . "Patching configure for NVIDIA Fortran compiler (${tag})\n");
         $c =~ s/$search_string/$replace_string/g;
     }
+
+    $search_string = 'case \$cc_basename in
+     ifort\*\|nagfor\*\) _lt_dar_can_shared=yes ;;
+     \*\) _lt_dar_can_shared=\$GCC ;;
+  esac';
+    $replace_string = "case \$cc_basename in
+     flang*|ifort*|nagfor*) _lt_dar_can_shared=yes ;;
+     *) _lt_dar_can_shared=\$GCC ;;
+  esac";
+    push(@verbose_out, $indent_str . "Patching configure for flang compiler on Darwin (FC)\n");
+    $c =~ s/$search_string/$replace_string/g;
+
+    $search_string = 'archive_cmds_FC="\\\\\\$CC -dynamiclib';
+    $replace_string = 'archive_cmds_FC="\$CC --shared';
+    push(@verbose_out, $indent_str . "Patching configure for flang compiler on Darwin (FC)\n");
+    $c =~ s/$search_string/$replace_string/g;
+    $c =~ s/(archive_cmds_FC.*)-install_name \\\$rpath/$1-Wl,-install_name,\\\`echo \\\$rpath | sed \'s%^[ ]*%%\'\\\`/g;
 
     # Only write out verbose statements and a new configure if the
     # configure content actually changed
